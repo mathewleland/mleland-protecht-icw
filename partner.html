@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Protecht ICW Widget Demo</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <!-- self hosting icons is better long term -->
+    <!-- <script src="./dist/icw.umd.min.js"></script> during dev-->
+</head>
+
+<body>
+    <h1>ICW Demo</h1>
+    <div id="icw-container"></div>
+
+    <script type="module">
+        import { createICWWidget } from './src/index.ts'; // during dev
+
+        const partnerOptions = {
+            containerId: 'icw-container',
+            apiKey: 'pk_sandbox_fea992c0c535b522f2f5d8fae68725ac0c480da6',
+            currency: 'USD',
+            items: [{ unit_cost: '100.00', quantity: 1 }],
+            locale: 'en_US'
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createICWWidget(partnerOptions);
+        });
+    </script>
+</body>
+
+</html>
