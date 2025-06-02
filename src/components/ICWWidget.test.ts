@@ -220,7 +220,7 @@ describe('ICWWidget', () => {
 
             widget.initialize(mockConfig);
 
-            // Test fetchAndRender error handling directly - it should re-throw the error
+            // Test fetchAndRender error handling directly; it should re-throw the error
             await expect((widget as any).fetchAndRender()).rejects.toThrow('API Error');
         });
     });

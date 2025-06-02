@@ -100,6 +100,8 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   ```
 
+  I tried to bundle these in my own script but had a very difficult time. Ideally, to avoid this, I would have the SVG icons live on the server and fetch them dynamically on the api request
+
 - **Styling**: Scoped to Shadow DOM. Host page cannot override widget styles unless explicitly supported.
 - **Browser Support**: Modern browsers with Web Component support (ES2019+). No IE11 support out-of-the-box.
 - **No retry logic**: Network errors display an error message, but no automatic retry is implemented.

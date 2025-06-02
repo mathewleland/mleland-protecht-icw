@@ -1,13 +1,12 @@
 export interface Item {
-    unit_cost: string;  // e.g. "100.00"
-    quantity?: number;  // default to 1 if omitted
-    // more fields if needed
+    unit_cost: string;
+    quantity?: number;
 }
 
 export interface ConfigureRequest {
     currency: string;
     items: Item[];
-    locale: string;    // e.g. "en_US"
+    locale: string;
 }
 
 export interface Quote {
@@ -40,5 +39,4 @@ export interface ICWResponse {
         legal_name: string;
         id: string;
     };
-    // …other fields can be ignored or extended later
 }

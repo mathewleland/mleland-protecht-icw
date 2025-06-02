@@ -20,6 +20,5 @@ export async function configureICW(
         throw new Error(`API Error ${response.status}: ${text}`);
     }
     const data = (await response.json()) as ICWResponse;
-    console.log('data', data);
     return data;
 }
