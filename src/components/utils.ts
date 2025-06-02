@@ -6,7 +6,7 @@ export function createMaterialIcon(iconName: string, tooltip?: string) {
     return `<span class="material-icons"${titleAttr}${ariaLabelAttr}>${icon || 'help_outline'}</span>`;
 }
 
-export const iconMap: Record<string, string> = {
+const iconMap: Record<string, string> = {
     "AirplanemodeInactive": 'airplanemode_inactive',
     'CarCrash': 'car_crash',
     'Thunderstorm': 'thunderstorm',

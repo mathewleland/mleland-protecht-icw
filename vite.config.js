@@ -7,5 +7,10 @@ export default defineConfig({
     },
     server: {
         open: '/partner.html'
+    },
+    test: {
+        environment: 'jsdom',
+        globals: true,
+        setupFiles: ['src/test/setup.ts'],
     }
 }) 

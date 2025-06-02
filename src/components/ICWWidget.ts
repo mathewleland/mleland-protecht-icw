@@ -12,8 +12,8 @@ interface ICWConfig {
   onProtectionToggle?: (isChecked: boolean) => void; // custom callback for toggle
 }
 
-class ICWWidget extends HTMLElement {
-  private shadow: ShadowRoot;
+export class ICWWidget extends HTMLElement {
+  protected shadow: ShadowRoot;
   private config!: ICWConfig;
   private data?: ICWResponse;
 

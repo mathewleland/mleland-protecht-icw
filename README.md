@@ -6,7 +6,7 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
 
 ## Project Overview
 
-- **Purpose**: Provide a drop-in widget merchants can embed on their checkout page to display insurance quotes, perils, links, and underwriter information.
+- **Purpose**: Provide a drop-in widget merchants can embed on their checkout page to display price, perils, links, and underwriter information.
 - **Key Features**:
   - **One-time fetch → render**: Calls `/api/internal/widgets/icw/configure/v4` and displays the response.
   - **Shadow DOM isolation**: Ensures no CSS leakage between the host page and the widget.
@@ -16,13 +16,6 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
 
 ---
 
-## Prerequisites
-
-- Node.js (≥ 16.x) and npm installed.
-- Internet access to reach `https://api.sandbox.protecht.com`.
-- A container element (e.g., `<div id="icw-container"></div>`) on the host page.
-
----
 
 ## Setup & Build
 
@@ -33,15 +26,10 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
    cd mleland-protecht-icw
    ```
 
-2. **Install dependencies**
+2. **Install dependencies and build**
 
    ```bash
    npm install
-   ```
-
-3. **Build the widget**
-
-   ```bash
    npm run build
    ```
 
@@ -75,7 +63,7 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
    <script>
      document.addEventListener('DOMContentLoaded', () => {
        // Replace with your actual sandbox or production API key
-       const API_KEY = 'pk_sandbox_fea992c0c535b522f2f5d8fae68725ac0c480da6';
+       const API_KEY = 'YOUR_API_KEY';
 
        ProtechtICW.createICWWidget({
          containerId: 'icw-container',
@@ -91,7 +79,7 @@ A lightweight, embeddable "In-Checkout Widget" (ICW) that fetches an insurance q
    ```
 
 4. **What happens next**:
-   - The widget displays a "Loading insurance quote…" message.
+   - The widget displays a "Loading…" message.
    - It sends a POST to `https://api.sandbox.protecht.com/api/internal/widgets/icw/configure/v4`.
    - On success, it renders:
      - Quote Total
@@ -159,20 +147,3 @@ protecht-icw/
 ├── tsconfig.json
 └── README.md
 ```
-
----
-
-## Future Improvements
-
-- Add opt-in/out toggle and dispatch events to host page.
-- Enable quantity input and re-fetch coverage dynamically.
-- Support CSS variable overrides (`--quote-color`, etc.).
-- Retry/backoff logic on network errors.
-- Add E2E tests in a browser environment (Playwright or Cypress).
-
----
-
-## License
-
-MIT License
-
