@@ -20,9 +20,7 @@ class ICWWidget extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
     }
 
-    // Called when element is added to DOM
     connectedCallback() {
-        // Expect that `this.config` was set before appending
         this.renderLoading();
         this.fetchAndRender().catch((err) => this.renderError(err));
     }
@@ -30,12 +28,10 @@ class ICWWidget extends HTMLElement {
     // Populate configuration
     public initialize(config: ICWConfig) {
         this.config = {
-            ...config,
-            apiKey: config.apiKey || 'pk_sandbox_fea992c0c535b522f2f5d8fae68725ac0c480da6',
             locale: config.locale || 'en_US',
-            onProtectionToggle: config.onProtectionToggle || (() => { })
+            onProtectionToggle: config.onProtectionToggle || (() => { }),
+            ...config,
         };
-
         console.log('config', this.config);
     }
 
@@ -56,10 +52,12 @@ class ICWWidget extends HTMLElement {
     }
 
     private renderWidget() {
-        if (!this.data) return;
+        if (!this.data) {
+            this.renderError(new Error('No data received from API'));
+            return;
+        }
         const { quote_literal, perils, links, underwriter } = this.data;
 
-        // Base HTML + minimal styling (could move CSS to external file and import as string)
         this.shadow.innerHTML = `
       <style>
         @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
@@ -67,15 +65,17 @@ class ICWWidget extends HTMLElement {
         :host {
           display: block;
           font-family: Arial, sans-serif;
-          border: 1px solid #e0e0e0;
+          border: 1px dotted #e0e0e0;
           border-radius: 8px;
-          padding: 16px;
-          max-width: 350px;
+          padding: 10px;
+          max-width: 320px;
           box-sizing: border-box;
+          height: auto;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         h2 { margin: 0 0 12px; font-size: 1.25rem; }
         .quote { font-size: 1.5rem; font-weight: bold; margin-bottom: 12px; }
-        .section { margin-bottom: 12px; }
+        .section { margin-bottom: 5px; }
         .peril-item {
           display: flex;
           align-items: center;
@@ -85,10 +85,14 @@ class ICWWidget extends HTMLElement {
           margin-right: 8px;
           color: #666;
           font-size: 20px;
+          cursor: help;
+        }
+        .material-icons:hover {
+          color: red
         }
         .protection-toggle {
           display: flex;
-          align-items: center;
+          justify-content: space-around;
           margin-top: 16px;
           padding: 12px;
           background-color: #f8f9fa;
@@ -97,50 +101,92 @@ class ICWWidget extends HTMLElement {
         }
         .protection-toggle input[type="checkbox"] {
           margin-right: 8px;
-          transform: scale(1.2);
+          transform: scale(1.5);
+          flex-grow: 1;
         }
         .protection-toggle label {
           font-weight: 500;
           cursor: pointer;
           user-select: none;
+          flex-grow: 1;
         }
+          #perils, #links {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          }
+
+          #links {
+          font-size: 11px;
+          }
+          .links-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-around;
+          }
+
+        //   .link-item {
+        //     border: 1px solid blue;
+        //   }
+
+        .perils-icons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 8px;
+        }
+
+        .peril-item {
+          display: flex;
+          align-items: center;
+        }
+        #underwriter {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 14px;
+        }
+          .underwriter-name {
+          font-size: 12px;
+          color: #666;
+          }
       </style>
-      <h2>Quote Total</h2>
-      <div class="quote">${quote_literal}</div>
+      <h2>Total: ${quote_literal}</h2>
+      <div class="protection-toggle">
+      <label for="protection-checkbox" id="protection-label">Protecht my purchase</label>
+        <input type="checkbox" id="protection-checkbox" />
+      </div>
       <div class="section" id="perils"></div>
       <div class="section" id="links"></div>
       <div class="section" id="underwriter"></div>
-      <div class="protection-toggle">
-        <input type="checkbox" id="protection-checkbox" />
-        <label for="protection-checkbox">Protecht my purchase</label>
-      </div>
     `;
 
         // Render perils if any
         const perilsContainer = this.shadow.querySelector('#perils')!;
         if (perils.length > 0) {
-            perilsContainer.innerHTML = `<strong>Perils:</strong><ul>${perils
+            perilsContainer.innerHTML = `<strong>Perils:</strong><div class="perils-icons">${perils
                 .map((p) => {
-                    return `<div class="peril-item">
-                        <li> ${p.description} </li>
-                    </div>`;
+                    const icon = p.icon
+                    return `<div class="peril-item">${createMaterialIcon(icon, p.name)}</div>`;
                 })
-                .join('')}</ul>`;
+                .join('')}</div>`;
         } else {
             perilsContainer.innerHTML = `<em>No perils available</em>`;
         }
 
         // Render links
         const linksContainer = this.shadow.querySelector('#links')!;
-        linksContainer.innerHTML = `<strong>Links:</strong><ul>${links
-            .map((l) => `<li><a href="${l.url}" target="_blank">${l.type}</a></li>`)
-            .join('')}</ul>`;
+        linksContainer.innerHTML = `<strong>${createMaterialIcon('Link')}</strong><div class="links-list">${links
+            .map((l) => `<div class="link-item"><a href="${l.url}" target="_blank">${translateLink[l.type] || l.type}</a></div>`)
+            .join('')}</div>`;
 
         // Render underwriter
         const underwriterContainer = this.shadow.querySelector('#underwriter')!;
         underwriterContainer.innerHTML = `
-      <strong>Underwriter: </strong>
-      <div>${underwriter.name} (${underwriter.legal_name})</div>
+      <strong>Underwriter </strong>
+      <div class="underwriter-name">${underwriter.name} (${underwriter.legal_name})</div>
     `;
 
         // Add event listener for the protection checkbox
@@ -178,12 +224,26 @@ export function createICWWidget(config: ICWConfig) {
     }
 }
 
-
-
-function createMaterialIcon(iconName: string) {
-    const el = document.createElement('span');
-    el.className = 'material-icons';
-    el.textContent = iconName || 'help_outline';
-    return el;
+function createMaterialIcon(iconName: string, tooltip?: string) {
+    const icon = iconMap[iconName as keyof typeof iconMap];
+    console.log('iconName', iconName, icon);
+    const titleAttr = tooltip ? ` title="${tooltip}"` : '';
+    const ariaLabelAttr = tooltip ? ` aria-label="${tooltip}"` : '';
+    return `<span class="material-icons"${titleAttr}${ariaLabelAttr}>${icon || 'help_outline'}</span>`;
 }
 
+const iconMap: Record<string, string> = {
+    "AirplanemodeInactive": 'airplanemode_inactive',
+    'CarCrash': 'car_crash',
+    'Thunderstorm': 'thunderstorm',
+    'Healing': 'healing',
+    'Coronavirus': 'coronavirus',
+    "Gavel": "gavel",
+    "Link": "link"
+}
+
+const translateLink: Record<string, string> = {
+    "faq": "FAQ",
+    "help_center": "Help Center",
+    "RefundTerms": "Refund Terms",
+}

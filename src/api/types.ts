@@ -31,8 +31,8 @@ export interface ICWResponse {
     legal_content_expander: string;
     perils: Array<{
         icon: string;
-        description: string;
         id: string;
+        name: string;
     }>;
     links: Array<{ url: string; type: string }>;
     underwriter: {
