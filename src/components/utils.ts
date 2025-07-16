@@ -1,20 +1,24 @@
-export function createMaterialIcon(iconName: string, tooltip?: string) {
-    const icon = iconMap[iconName as keyof typeof iconMap];
-    console.log('iconName', iconName, icon);
+// Inline SVG icons to eliminate external dependency
+const svgIcons: Record<string, string> = {
+    "AirplanemodeInactive": `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 9V3.5C13 2.67 12.33 2 11.5 2S10 2.67 10 3.5V9L8.5 7.5L7.91 8.09L10 10.18L12.09 8.09L11.5 7.5L13 9M11.5 22C12.33 22 13 21.33 13 20.5V14L14.5 15.5L15.09 14.91L13 12.82L10.91 14.91L11.5 15.5L10 14V20.5C10 21.33 10.67 22 11.5 22Z"/></svg>`,
+    'CarCrash': `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H16.75V3.5C16.75 2.67 16.08 2 15.25 2S13.75 2.67 13.75 3.5V5H10.25V3.5C10.25 2.67 9.58 2 8.75 2S7.25 2.67 7.25 3.5V5H6.5C5.84 5 5.28 5.42 5.08 6.01L3.14 12.27C3.05 12.5 3 12.74 3 13V19C3 19.55 3.45 20 4 20H5C5.55 20 6 19.55 6 19V18H18V19C18 19.55 18.45 20 19 20H20C20.55 20 21 19.55 21 19V13C21 12.74 20.95 12.5 20.86 12.27L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5S5.67 13 6.5 13S8 13.67 8 14.5S7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5S16.67 13 17.5 13S19 13.67 19 14.5S18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z"/></svg>`,
+    'Thunderstorm': `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 16C6 18.2 7.8 20 10 20C11.1 20 12.1 19.6 12.8 18.9C13.1 18.6 13.1 18.1 12.8 17.8C12.5 17.5 12 17.5 11.7 17.8C11.3 18.2 10.7 18.5 10 18.5C8.6 18.5 7.5 17.4 7.5 16C7.5 14.6 8.6 13.5 10 13.5C10.4 13.5 10.8 13.4 11.1 13.2C11.5 13 11.7 12.5 11.5 12.1C11.3 11.7 10.8 11.5 10.4 11.7C10.3 11.8 10.1 11.8 10 11.8C7.8 11.8 6 13.6 6 16M19 12C19 11.4 18.6 11 18 11S17 11.4 17 12C17 12.6 17.4 13 18 13S19 12.6 19 12M13 8.5L15.5 11H14V15L11.5 12.5H13V8.5Z"/></svg>`,
+    'Healing': `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.73 12.02L18.71 11.04C19.1 10.65 19.1 10.02 18.71 9.63L14.37 5.29C13.98 4.9 13.35 4.9 12.96 5.29L12 6.25L11.04 5.29C10.65 4.9 10.02 4.9 9.63 5.29L5.29 9.63C4.9 10.02 4.9 10.65 5.29 11.04L6.27 12.02L5.29 12.96C4.9 13.35 4.9 13.98 5.29 14.37L9.63 18.71C10.02 19.1 10.65 19.1 11.04 18.71L12 17.75L12.96 18.71C13.35 19.1 13.98 19.1 14.37 18.71L18.71 14.37C19.1 13.98 19.1 13.35 18.71 12.96L17.73 12.02M12 9L15 12L12 15L9 12L12 9Z"/></svg>`,
+    'Coronavirus': `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 10.5C21 11.6 20.1 12.5 19 12.5C17.9 12.5 17 11.6 17 10.5C17 9.4 17.9 8.5 19 8.5C20.1 8.5 21 9.4 21 10.5M21 13.5C21 14.6 20.1 15.5 19 15.5C17.9 15.5 17 14.6 17 13.5C17 12.4 17.9 11.5 19 11.5C20.1 11.5 21 12.4 21 13.5M12 18C13.1 18 14 18.9 14 20C14 21.1 13.1 22 12 22C10.9 22 10 21.1 10 20C10 18.9 10.9 18 12 18M5 10.5C5 11.6 4.1 12.5 3 12.5C1.9 12.5 1 11.6 1 10.5C1 9.4 1.9 8.5 3 8.5C4.1 8.5 5 9.4 5 10.5M5 13.5C5 14.6 4.1 15.5 3 15.5C1.9 15.5 1 14.6 1 13.5C1 12.4 1.9 11.5 3 11.5C4.1 11.5 5 12.4 5 13.5M12 7C12.6 7 13 7.4 13 8C13 8.6 12.6 9 12 9C11.4 9 11 8.6 11 8C11 7.4 11.4 7 12 7M12 15C12.6 15 13 15.4 13 16C13 16.6 12.6 17 12 17C11.4 17 11 16.6 11 16C11 15.4 11.4 15 12 15M8 12C8.6 12 9 12.4 9 13C9 13.6 8.6 14 8 14C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12M16 12C16.6 12 17 12.4 17 13C17 13.6 16.6 14 16 14C15.4 14 15 13.6 15 13C15 12.4 15.4 12 16 12Z"/></svg>`,
+    "Gavel": `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 21L9 14.5L10.5 16L4 22.5L2.5 21M13.09 12.5L15.5 10.09L4.91 1.5L2.5 3.91L13.09 12.5M15.5 7.5L19 4L20 5L16.5 8.5L15.5 7.5M3 3L21 21L19.5 22.5L1.5 4.5L3 3Z"/></svg>`,
+    "Link": `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 13.41C11 13.8 11 14.4 10.59 14.81C10.2 15.2 9.6 15.2 9.19 14.81C7.22 12.84 7.22 9.58 9.19 7.61L12.36 4.44C14.33 2.47 17.59 2.47 19.56 4.44C21.53 6.41 21.53 9.67 19.56 11.64L18.22 12.98C18.22 11.96 17.96 10.93 17.43 10.01L18.22 9.22C19.39 8.05 19.39 6.17 18.22 5C17.05 3.83 15.17 3.83 14 5L10.83 8.17C9.66 9.34 9.66 11.22 10.83 12.39C11.13 12.69 11.46 12.93 11.81 13.11C11.35 13.36 10.91 13.68 10.59 13.41M13.41 9.19C13.8 8.8 14.4 8.8 14.81 9.19C16.78 11.16 16.78 14.42 14.81 16.39L11.64 19.56C9.67 21.53 6.41 21.53 4.44 19.56C2.47 17.59 2.47 14.33 4.44 12.36L5.78 11.02C5.78 12.04 6.04 13.07 6.57 13.99L5.78 14.78C4.61 15.95 4.61 17.83 5.78 19C6.95 20.17 8.83 20.17 10 19L13.17 15.83C14.34 14.66 14.34 12.78 13.17 11.61C12.87 11.31 12.54 11.07 12.19 10.89C12.65 10.64 13.09 10.32 13.41 9.19Z"/></svg>`,
+    "help_outline": `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 9V7L15 1H5C3.89 1 3 1.89 3 3V19C3 20.1 3.89 21 5 21H11V19H5V3H13V9H21Z"/></svg>`
+};
+
+export function createIcon(iconName: string, tooltip?: string) {
+    const icon = svgIcons[iconName as keyof typeof svgIcons] || svgIcons.help_outline;
     const titleAttr = tooltip ? ` title="${tooltip}"` : '';
     const ariaLabelAttr = tooltip ? ` aria-label="${tooltip}"` : '';
-    return `<span class="material-icons"${titleAttr}${ariaLabelAttr}>${icon || 'help_outline'}</span>`;
+    return `<span class="icon"${titleAttr}${ariaLabelAttr} style="display: inline-flex; align-items: center; margin-right: 8px; color: #666; cursor: help;">${icon}</span>`;
 }
 
-const iconMap: Record<string, string> = {
-    "AirplanemodeInactive": 'airplanemode_inactive',
-    'CarCrash': 'car_crash',
-    'Thunderstorm': 'thunderstorm',
-    'Healing': 'healing',
-    'Coronavirus': 'coronavirus',
-    "Gavel": "gavel",
-    "Link": "link"
-}
+// Keep the old function name for backward compatibility
+export const createMaterialIcon = createIcon;
 
 export const translateLink: Record<string, string> = {
     "faq": "FAQ",

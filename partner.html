@@ -3,32 +3,39 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Protecht ICW Widget Demo</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <!-- self hosting icons is better long term -->
-    <script src="./dist/icw.umd.min.js"></script> <!-- during prod -->
+    <script src="./dist/icw.umd.min.js" async></script>
 </head>
 
 <body>
     <h1>Mathew Leland Demo</h1>
-    <div id="material-icons"></div>
     <div id="icw-container"></div>
 
-    <script type="module">
-        // import { createICWWidget } from './src/index.ts'; // during dev
-
+    <script>
         const partnerOptions = {
             containerId: 'icw-container',
             apiKey: 'pk_sandbox_fea992c0c535b522f2f5d8fae68725ac0c480da6',
             currency: 'USD',
             items: [{ unit_cost: '100.00', quantity: 1 }],
-            locale: 'en_US'
+            locale: 'en_US',
+            lazy: true // Enable lazy loading for better performance
+        };
+
+        // Handle script loading asynchronously
+        function initializeWidget() {
+            if (typeof createICWWidget !== 'undefined') {
+                createICWWidget(partnerOptions);
+            } else {
+                setTimeout(initializeWidget, 100);
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            createICWWidget(partnerOptions);
-        });
-
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeWidget);
+        } else {
+            initializeWidget();
+        }
     </script>
 </body>
 
